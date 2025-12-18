@@ -24,7 +24,6 @@ export async function getUserProfile(req: FastifyRequest, reply: FastifyReply) {
       return ApiResponseHelper.unauthorized(reply, 'Authentication required');
     }
     const result = await service.getUserProfile(userId);
-    console.log('Response -->', result);
     return ApiResponseHelper.success(
       reply,
       'Profile retrieved successfully',

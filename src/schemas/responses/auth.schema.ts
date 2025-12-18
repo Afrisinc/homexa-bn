@@ -33,3 +33,41 @@ export const LoginResponseSchema = {
   },
   required: ['success', 'resp_msg', 'resp_code', 'data'],
 } as const;
+
+export const ForgotPasswordResponseSchema = {
+  type: 'object',
+  properties: {
+    success: { type: 'boolean', example: true },
+    resp_msg: {
+      type: 'string',
+      example: 'Reset password email sent successfully',
+    },
+    resp_code: { type: 'number', example: 1002 },
+    data: {
+      type: 'object',
+      properties: {
+        resetLink: { type: 'string', nullable: true },
+        otp: { type: 'string', nullable: true },
+      },
+      required: [],
+    },
+  },
+  required: ['success', 'resp_msg', 'resp_code', 'data'],
+} as const;
+
+export const ResetPasswordResponseSchema = {
+  type: 'object',
+  properties: {
+    success: { type: 'boolean', example: true },
+    resp_msg: { type: 'string', example: 'Password reset successfully' },
+    resp_code: { type: 'number', example: 1003 },
+    data: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Password reset successfully' },
+      },
+      required: ['message'],
+    },
+  },
+  required: ['success', 'resp_msg', 'resp_code', 'data'],
+} as const;
