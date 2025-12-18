@@ -1,12 +1,12 @@
-import { FastifyError, FastifyReply, FastifyRequest } from 'fastify';
+import type { FastifyError, FastifyReply, FastifyRequest } from 'fastify';
 import { ZodError } from 'zod';
 import {
-  PrismaClientKnownRequestError,
   PrismaClientInitializationError,
+  PrismaClientKnownRequestError,
   PrismaClientValidationError,
 } from '@prisma/client/runtime/library';
-import { logger } from '@/utils/logger.js';
 import { ApiResponseHelper, ResponseCode } from '@/utils/apiResponse.js';
+import { logger } from '@/utils/logger.js';
 
 // Custom error types
 export class AppError extends Error {
@@ -14,12 +14,7 @@ export class AppError extends Error {
   public readonly isOperational: boolean;
   public readonly code?: string;
 
-  constructor(
-    message: string,
-    statusCode: number = 500,
-    isOperational: boolean = true,
-    code?: string
-  ) {
+  constructor(message: string, statusCode: number = 500, isOperational: boolean = true, code?: string) {
     super(message);
     this.statusCode = statusCode;
     this.isOperational = isOperational;
@@ -31,7 +26,7 @@ export class AppError extends Error {
 }
 
 export class ValidationError extends AppError {
-  constructor(message: string, details?: any) {
+  constructor(message: string, _details?: any) {
     super(message, 400, true, 'VALIDATION_ERROR');
     this.name = 'ValidationError';
   }
@@ -73,7 +68,7 @@ export class DatabaseError extends AppError {
 }
 
 // Error response interface
-interface ErrorResponse {
+interface _ErrorResponse {
   error: string;
   message: string;
   statusCode: number;
@@ -91,17 +86,27 @@ const shouldLogError = (statusCode: number): boolean => {
 
 // Helper function to map status code to response code (Afrisinc standard)
 const getResponseCode = (statusCode: number, errorCode?: string): number => {
-  if (statusCode === 400) return ResponseCode.INVALID_REQUEST;
-  if (statusCode === 401) return ResponseCode.INVALID_CREDENTIALS;
-  if (statusCode === 403) return ResponseCode.ACCESS_DENIED;
-  if (statusCode === 404) return ResponseCode.NOT_FOUND;
-  if (statusCode === 409) {
-    return errorCode === 'UNIQUE_CONSTRAINT_ERROR'
-      ? ResponseCode.DUPLICATE_ENTRY
-      : ResponseCode.CONFLICT;
+  if (statusCode === 400) {
+    return ResponseCode.INVALID_REQUEST;
   }
-  if (statusCode === 429) return ResponseCode.QUOTA_EXCEEDED;
-  if (statusCode >= 500) return ResponseCode.INTERNAL_ERROR;
+  if (statusCode === 401) {
+    return ResponseCode.INVALID_CREDENTIALS;
+  }
+  if (statusCode === 403) {
+    return ResponseCode.ACCESS_DENIED;
+  }
+  if (statusCode === 404) {
+    return ResponseCode.NOT_FOUND;
+  }
+  if (statusCode === 409) {
+    return errorCode === 'UNIQUE_CONSTRAINT_ERROR' ? ResponseCode.DUPLICATE_ENTRY : ResponseCode.CONFLICT;
+  }
+  if (statusCode === 429) {
+    return ResponseCode.QUOTA_EXCEEDED;
+  }
+  if (statusCode >= 500) {
+    return ResponseCode.INTERNAL_ERROR;
+  }
   return ResponseCode.INVALID_REQUEST;
 };
 
@@ -251,7 +256,7 @@ export const errorHandler = (
 };
 
 // Helper function to get error name from status code
-function getErrorName(statusCode: number): string {
+function _getErrorName(statusCode: number): string {
   switch (statusCode) {
     case 400:
       return 'Bad Request';
@@ -282,13 +287,11 @@ function getErrorName(statusCode: number): string {
 
 // Helper function to create standardized errors
 export const createError = {
-  badRequest: (message: string, details?: any) =>
-    new ValidationError(message, details),
+  badRequest: (message: string, details?: any) => new ValidationError(message, details),
   unauthorized: (message?: string) => new AuthenticationError(message),
   forbidden: (message?: string) => new AuthorizationError(message),
   notFound: (message?: string) => new NotFoundError(message),
   conflict: (message?: string) => new ConflictError(message),
-  internal: (message?: string) =>
-    new AppError(message || 'Internal Server Error', 500),
+  internal: (message?: string) => new AppError(message || 'Internal Server Error', 500),
   database: (message?: string) => new DatabaseError(message),
 };

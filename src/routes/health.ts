@@ -1,4 +1,4 @@
-import { FastifyInstance } from 'fastify';
+import type { FastifyInstance } from 'fastify';
 import { PrismaClient } from '@prisma/client';
 import { healthLogger } from '@/utils/logger.js';
 
@@ -67,12 +67,10 @@ class MetricsStore {
   getMetrics() {
     const averageResponseTime =
       this.responseTimes.length > 0
-        ? this.responseTimes.reduce((a, b) => a + b, 0) /
-          this.responseTimes.length
+        ? this.responseTimes.reduce((a, b) => a + b, 0) / this.responseTimes.length
         : 0;
 
-    const errorRate =
-      this.requestCount > 0 ? (this.errorCount / this.requestCount) * 100 : 0;
+    const errorRate = this.requestCount > 0 ? (this.errorCount / this.requestCount) * 100 : 0;
 
     return {
       requestCount: this.requestCount,

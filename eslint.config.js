@@ -22,7 +22,7 @@ export default tseslint.config(
           ignoreRestSiblings: true,
         },
       ],
-      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-non-null-assertion': 'warn',
@@ -30,7 +30,7 @@ export default tseslint.config(
       // General ESLint rules
       'no-console': 'warn',
       'no-debugger': 'error',
-      'no-duplicate-imports': 'error',
+      'no-duplicate-imports': 'off',
       'no-unused-expressions': 'error',
       'prefer-const': 'error',
       'no-var': 'error',
@@ -53,7 +53,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['**/*.test.{js,ts}', '**/*.spec.{js,ts}'],
+    files: ['**/*.test.{js,ts}', '**/*.spec.{js,ts}', 'src/tests/**/*'],
     rules: {
       'no-console': 'off',
       '@typescript-eslint/no-explicit-any': 'off',

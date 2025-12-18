@@ -1,4 +1,4 @@
-import { FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyRequest, FastifyReply } from 'fastify';
 import jwt from 'jsonwebtoken';
 import { logger } from '@/utils/logger.js';
 import { ApiResponseHelper } from '@/utils/apiResponse.js';
@@ -19,10 +19,7 @@ declare module 'fastify' {
   }
 }
 
-export const authGuard = async (
-  request: FastifyRequest,
-  reply: FastifyReply
-) => {
+export const authGuard = async (request: FastifyRequest, reply: FastifyReply) => {
   try {
     let authHeader = request.headers.authorization;
 
@@ -35,10 +32,7 @@ export const authGuard = async (
         },
         'Authorization header missing'
       );
-      return ApiResponseHelper.unauthorized(
-        reply,
-        'Authorization header is required'
-      );
+      return ApiResponseHelper.unauthorized(reply, 'Authorization header is required');
     }
 
     // Auto-prefix Bearer if token is provided without it
@@ -62,10 +56,7 @@ export const authGuard = async (
     const jwtSecret = process.env.JWT_SECRET;
     if (!jwtSecret) {
       logger.error('JWT_SECRET environment variable not configured');
-      return ApiResponseHelper.internalError(
-        reply,
-        'Server configuration error'
-      );
+      return ApiResponseHelper.internalError(reply, 'Server configuration error');
     }
 
     const decoded = jwt.verify(token, jwtSecret) as JwtPayload;
@@ -123,10 +114,7 @@ export const authGuard = async (
   }
 };
 
-export const optionalAuthGuard = async (
-  request: FastifyRequest,
-  reply: FastifyReply
-) => {
+export const optionalAuthGuard = async (request: FastifyRequest, reply: FastifyReply) => {
   const authHeader = request.headers.authorization;
 
   if (!authHeader) {

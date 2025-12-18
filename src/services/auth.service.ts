@@ -1,5 +1,6 @@
 import { UserRepository } from '../repositories/user.repository';
-import { hashPassword, comparePassword, generateToken } from '../utils/jwt';
+import { comparePassword, generateToken, generateResetToken, hashPassword, verifyToken } from '../utils/jwt';
+import { env } from '../config/env';
 
 const repo = new UserRepository();
 
@@ -30,5 +31,49 @@ export class AuthService {
 
     const token = generateToken(user.id, user.email);
     return { user, token };
+  }
+  async forgotPassword(data: any) {
+    const user = await repo.findByEmail(data.email);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    let resetLink = null;
+    let otp = null;
+    if (data.source === 'webapp') {
+      const resetToken = generateResetToken(user.id, user.email);
+      resetLink = `${env.WEBAPP_URL}/reset-password?token=${resetToken}`;
+    } else if (data.source === 'app') {
+      otp = Math.floor(100000 + Math.random() * 900000).toString();
+      // Save OTP with 10 minutes expiration
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+      await repo.saveOtp(user.id, otp, expiresAt);
+    }
+    return resetLink ? { resetLink } : { otp };
+  }
+
+  async resetPassword(data: any) {
+    const { token, otp, email, newPassword } = data;
+    let userId: string;
+
+    if (token) {
+      const userData = verifyToken(token);
+      if (!userData) {
+        throw new Error('Invalid or expired token');
+      }
+      userId = userData.userId;
+    } else if (otp && email) {
+      const user = await repo.verifyOtp(email, otp);
+      if (!user) {
+        throw new Error('Invalid or expired OTP');
+      }
+      userId = user.id;
+      await repo.clearOtp(userId);
+    } else {
+      throw new Error('Either token or (otp + email) is required');
+    }
+
+    const hashed = await hashPassword(newPassword);
+    await repo.updatePassword(userId, hashed);
+    return { message: 'Password reset successfully' };
   }
 }

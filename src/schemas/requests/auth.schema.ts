@@ -47,3 +47,38 @@ export const LoginRequestSchema = {
   required: ['email', 'password'],
   additionalProperties: false,
 } as const;
+
+export const ForgotPasswordRequestSchema = {
+  type: 'object',
+  properties: {
+    email: {
+      type: 'string',
+      format: 'email',
+      description: 'User email address to send reset instructions',
+    },
+    source: {
+      type: 'string',
+      enum: ['webapp', 'app'],
+      description: 'Source of the request, either webapp or app',
+    },
+  },
+  required: ['email', 'source'],
+  additionalProperties: false,
+} as const;
+
+export const ResetPasswordRequestSchema = {
+  type: 'object',
+  properties: {
+    token: {
+      type: 'string',
+      description: 'Password reset token received via email or OTP',
+    },
+    newPassword: {
+      type: 'string',
+      minLength: 6,
+      description: 'New password to set (minimum 6 characters)',
+    },
+  },
+  required: ['token', 'newPassword'],
+  additionalProperties: false,
+} as const;

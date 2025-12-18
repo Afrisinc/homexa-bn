@@ -1,12 +1,6 @@
-import {
-  UpdateUserRequestSchema,
-  UserParamsSchema,
-} from '../requests/user.schema';
+import { UpdateUserRequestSchema, UserParamsSchema } from '../requests/user.schema';
 import { UserPublicSchema } from '../entities/user.schema';
-import {
-  SuccessResponseSchema,
-  ErrorResponseSchema,
-} from '../responses/common.schema';
+import { SuccessResponseSchema, ErrorResponseSchema } from '../responses/common.schema';
 
 export const GetUserRouteSchema = {
   tags: ['users'],
@@ -42,8 +36,7 @@ export const UpdateUserRouteSchema = {
 export const GetUserProfileSchema = {
   tags: ['users'],
   summary: 'Get authenticated user profile',
-  description:
-    'Retrieve the current authenticated user profile. Requires valid JWT token.',
+  description: 'Retrieve the current authenticated user profile. Requires valid JWT token.',
   security: [{ bearerAuth: [] }],
   response: {
     200: SuccessResponseSchema({
@@ -59,8 +52,7 @@ export const GetUserProfileSchema = {
 export const UpdateUserProfileSchema = {
   tags: ['users'],
   summary: 'Update authenticated user profile',
-  description:
-    'Update the current authenticated user profile information. Requires valid JWT token.',
+  description: 'Update the current authenticated user profile information. Requires valid JWT token.',
   security: [{ bearerAuth: [] }],
   body: UpdateUserRequestSchema,
   response: {

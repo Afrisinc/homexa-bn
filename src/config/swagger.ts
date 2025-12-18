@@ -1,4 +1,4 @@
-import { FastifySwaggerUiOptions } from '@fastify/swagger-ui';
+import type { FastifySwaggerUiOptions } from '@fastify/swagger-ui';
 import { env } from './env.js';
 
 /**
@@ -70,8 +70,7 @@ export const swaggerConfig = {
     tags: [
       {
         name: 'health',
-        description:
-          'Health Check - Service availability and status monitoring',
+        description: 'Health Check - Service availability and status monitoring',
       },
       {
         name: 'auth',

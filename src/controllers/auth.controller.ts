@@ -1,19 +1,16 @@
-import { FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyReply, FastifyRequest } from 'fastify';
 import { AuthService } from '../services/auth.service';
 import { ApiResponseHelper } from '../utils/apiResponse';
+import { getErrorMessage } from '../utils/errorHandler';
 
 const service = new AuthService();
 
 export async function registerUser(req: FastifyRequest, reply: FastifyReply) {
   try {
     const result = await service.register(req.body);
-    return ApiResponseHelper.created(
-      reply,
-      'User registered successfully',
-      result
-    );
-  } catch (err: any) {
-    return ApiResponseHelper.badRequest(reply, err.message);
+    return ApiResponseHelper.created(reply, 'User registered successfully', result);
+  } catch (err: unknown) {
+    return ApiResponseHelper.badRequest(reply, getErrorMessage(err));
   }
 }
 
@@ -21,7 +18,36 @@ export async function loginUser(req: FastifyRequest, reply: FastifyReply) {
   try {
     const result = await service.login(req.body);
     return ApiResponseHelper.success(reply, 'Login successful', result);
-  } catch (err: any) {
-    return ApiResponseHelper.invalidCredentials(reply, err.message);
+  } catch (err: unknown) {
+    return ApiResponseHelper.invalidCredentials(reply, getErrorMessage(err));
+  }
+}
+
+export async function forgotPassword(req: FastifyRequest, reply: FastifyReply) {
+  try {
+    const result = await service.forgotPassword(req.body);
+    return ApiResponseHelper.success(reply, 'Reset password email sent successfully', result);
+  } catch (err: unknown) {
+    return ApiResponseHelper.badRequest(reply, getErrorMessage(err));
+  }
+}
+
+export async function resetPassword(req: FastifyRequest, reply: FastifyReply) {
+  try {
+    const { token } = (req.query as { token?: string }) || {};
+    const { otp, email, newPassword } = req.body as {
+      otp?: string;
+      email?: string;
+      newPassword: string;
+    };
+    const result = await service.resetPassword({
+      token,
+      otp,
+      email,
+      newPassword,
+    });
+    return ApiResponseHelper.success(reply, 'Password reset successfully', result);
+  } catch (err: unknown) {
+    return ApiResponseHelper.badRequest(reply, getErrorMessage(err));
   }
 }

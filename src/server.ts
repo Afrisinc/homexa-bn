@@ -1,7 +1,7 @@
+import { env } from '@/config/env.js';
 import { connectToDatabase, gracefulShutdown } from '@/database/prisma.js';
 import { logger, startupLogger } from '@/utils/logger.js';
 import { createApp } from './app.js';
-import { env } from './config/env.js';
 
 // Global error handlers
 process.on('uncaughtException', (error: Error) => {
@@ -127,8 +127,7 @@ const start = async () => {
     startupLogger.debug(
       {
         heapUsed: Math.round((memoryUsage.heapUsed / 1024 / 1024) * 100) / 100,
-        heapTotal:
-          Math.round((memoryUsage.heapTotal / 1024 / 1024) * 100) / 100,
+        heapTotal: Math.round((memoryUsage.heapTotal / 1024 / 1024) * 100) / 100,
         external: Math.round((memoryUsage.external / 1024 / 1024) * 100) / 100,
         unit: 'MB',
       },
@@ -149,10 +148,7 @@ const start = async () => {
     } catch (cleanupError) {
       logger.error(
         {
-          error:
-            cleanupError instanceof Error
-              ? cleanupError.message
-              : 'Unknown error',
+          error: cleanupError instanceof Error ? cleanupError.message : 'Unknown error',
         },
         'Error during startup cleanup'
       );
@@ -183,12 +179,9 @@ if (process.env.NODE_ENV !== 'production') {
     logger.debug(
       {
         memory: {
-          heapUsed:
-            Math.round((memoryUsage.heapUsed / 1024 / 1024) * 100) / 100,
-          heapTotal:
-            Math.round((memoryUsage.heapTotal / 1024 / 1024) * 100) / 100,
-          external:
-            Math.round((memoryUsage.external / 1024 / 1024) * 100) / 100,
+          heapUsed: Math.round((memoryUsage.heapUsed / 1024 / 1024) * 100) / 100,
+          heapTotal: Math.round((memoryUsage.heapTotal / 1024 / 1024) * 100) / 100,
+          external: Math.round((memoryUsage.external / 1024 / 1024) * 100) / 100,
           unit: 'MB',
         },
         cpu: {
