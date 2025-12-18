@@ -14,8 +14,7 @@ import { ErrorResponseSchema } from '../responses/common.schema';
 export const RegisterRouteSchema = {
   tags: ['auth'],
   summary: 'Register a new user',
-  description:
-    'Create a new user account with email, password, firstName, lastName, and phone',
+  description: 'Create a new user account with email, password, firstName, lastName, and phone',
   body: RegisterRequestSchema,
   response: {
     201: RegisterResponseSchema,
@@ -37,8 +36,7 @@ export const LoginRouteSchema = {
 export const ForgotPasswordRouteSchema = {
   tags: ['auth'],
   summary: 'Reset user password',
-  description:
-    'Initiate password reset process by providing email and source (webapp or app)',
+  description: 'Initiate password reset process by providing email and source (webapp or app)',
   body: ForgotPasswordRequestSchema,
   response: {
     200: ForgotPasswordResponseSchema,

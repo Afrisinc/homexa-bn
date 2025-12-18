@@ -1,5 +1,5 @@
 {
-  "name": "@backend/api",
+  "name": "@homexa/api",
   "version": "1.0.0",
   "description": "Production-ready Node.js REST API with Fastify, TypeScript, and Prisma ORM",
   "homepage": "https://github.com/yourusername/backend-template",

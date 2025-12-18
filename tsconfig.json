@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2020",
     "module": "ES2020",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "lib": ["ES2020"],
     "outDir": "./dist",
     "rootDir": "./src",
@@ -16,10 +16,10 @@
     "declarationMap": true,
     "sourceMap": true,
     "types": ["node"],
-    "allowImportingTsExtensions": false,
+    "allowImportingTsExtensions": true,
     "noEmit": false,
     "isolatedModules": true,
-    "verbatimModuleSyntax": false,
+    "verbatimModuleSyntax": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
@@ -29,6 +29,7 @@
       "@/middlewares/*": ["src/middlewares/*"],
       "@/routes/*": ["src/routes/*"],
       "@/utils/*": ["src/utils/*"],
+      "@/config/*": ["src/config/*"],
       "@/schemas/*": ["src/schemas/*"],
       "@/database/*": ["src/database/*"],
       "@/tests/*": ["src/tests/*"]

@@ -1,5 +1,5 @@
 import { HealthRouteSchema } from '@/schemas';
-import { FastifyInstance } from 'fastify';
+import type { FastifyInstance } from 'fastify';
 import { authRoutes } from './auth.routes';
 import { userRoutes } from './user.routes';
 

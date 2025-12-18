@@ -1,11 +1,6 @@
 import { UserRepository } from '../repositories/user.repository';
-import {
-  comparePassword,
-  generateToken,
-  generateResetToken,
-  hashPassword,
-  verifyToken,
-} from '../utils/jwt';
+import { comparePassword, generateToken, generateResetToken, hashPassword, verifyToken } from '../utils/jwt';
+import { env } from '../config/env';
 
 const repo = new UserRepository();
 
@@ -46,7 +41,7 @@ export class AuthService {
     let otp = null;
     if (data.source === 'webapp') {
       const resetToken = generateResetToken(user.id, user.email);
-      resetLink = `http://localhost:3000/reset-password?token=${resetToken}`;
+      resetLink = `${env.WEBAPP_URL}/reset-password?token=${resetToken}`;
     } else if (data.source === 'app') {
       otp = Math.floor(100000 + Math.random() * 900000).toString();
       // Save OTP with 10 minutes expiration
