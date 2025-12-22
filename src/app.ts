@@ -1,12 +1,13 @@
-import Fastify from 'fastify';
-import type { FastifyInstance } from 'fastify';
 import fastifyCors from '@fastify/cors';
 import fastifyHelmet from '@fastify/helmet';
+import fastifyMultipart from '@fastify/multipart';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUI from '@fastify/swagger-ui';
-import { registerRoutes } from './routes/index.js';
-import { errorHandler } from './middlewares/errorHandler.js';
+import type { FastifyInstance } from 'fastify';
+import Fastify from 'fastify';
 import { swaggerConfig, swaggerUiConfig } from './config/swagger.js';
+import { errorHandler } from './middlewares/errorHandler.js';
+import { registerRoutes } from './routes/index.js';
 import { logger } from './utils/logger.js';
 
 /**
@@ -33,6 +34,14 @@ const createApp = async (): Promise<FastifyInstance> => {
       origin: true,
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    });
+
+    // Register Multipart for file uploads
+    logger.debug({}, 'Registering Multipart plugin for file uploads');
+    await app.register(fastifyMultipart, {
+      limits: {
+        fileSize: 5 * 1024 * 1024, // 5MB
+      },
     });
 
     // Register Helmet for security headers
