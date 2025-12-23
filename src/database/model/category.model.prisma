@@ -1,0 +1,27 @@
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  slug        String    @unique
+  parentId    String?
+  description String?
+  status      String    @default("active")
+  imageUrl   String?
+  imageAltText String?
+  // SEO
+  metaTitle  String?
+  metaDescription String?
+  seoKeywords   String[]  @default([]) // Changed to array
+  // metadata
+  displayOrder Int?
+  isFeatured   Boolean   @default(false)
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime? // Soft delete timestamp
+
+  // Self-referencing relationship for hierarchical structure
+  parent      Category?  @relation("CategoryChildren", fields: [parentId], references: [id], onDelete: NoAction)
+  children    Category[] @relation("CategoryChildren")
+
+  @@map("categories")
+}
