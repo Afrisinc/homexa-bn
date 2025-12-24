@@ -1,0 +1,144 @@
+model Product {
+  id                  String    @id @default(uuid())
+
+  // Basic Info
+  name                String
+  description         String
+  slug                String    @unique
+  status              String    @default("active") // active, draft, archived
+
+  // SKU and Barcode
+  sku                 String    @unique
+  barcode             String?   @unique
+
+  // Pricing
+  price               Float
+  compareAtPrice      Float?    // Original/compare price for discounts
+  discountPercent     Float?    // Calculated discount percentage
+  currency            String    @default("USD")
+  taxRate             Float?    // Tax percentage
+
+  // Organization
+  categoryId          String
+  category            Category  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  vendorId            String?
+  vendor              Vendor?   @relation(fields: [vendorId], references: [id], onDelete: SetNull)
+
+  // Seller (User with SELLER role)
+  sellerId            String
+  seller              User      @relation(fields: [sellerId], references: [id], onDelete: Restrict, name: "SellerProducts")
+
+  // Brand and Model Info
+  brand               String?
+  model               String?
+
+  // Visibility and Metadata
+  visibility          Boolean   @default(true)
+  returnable          Boolean   @default(true)
+  isFeatured          Boolean   @default(false)
+  tags                String[]  @default([])
+
+  // Inventory
+  stockQuantity       Int       @default(0)
+  allowBackorder      Boolean   @default(false)
+  warehouseLocation   String?
+
+  // Media - stored as JSON for flexibility
+  images              String[]  @default([]) // Array of image URLs
+  videos              String[]  @default([]) // Array of video URLs
+
+  // Shipping Info - stored as JSON for complex nested data
+  weight              String?   // e.g., "0.8kg"
+  length              String?   // e.g., "20cm"
+  width               String?   // e.g., "10cm"
+  height              String?   // e.g., "5cm"
+
+  // Product Attributes - stored as JSON for flexibility
+  // e.g., { "color": "black", "ram": "8GB", "storage": "128GB" }
+  attributes          Json?     @default("{}")
+
+  // SEO
+  metaTitle           String?
+  metaDescription     String?
+  seoKeywords         String[]  @default([])
+
+  // Timestamps
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  deletedAt           DateTime? // Soft delete
+
+  // Relations
+  reviews             Review[]
+  variants            ProductVariant[]
+
+  @@index([categoryId])
+  @@index([vendorId])
+  @@index([sellerId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("products")
+}
+
+model ProductVariant {
+  id                  String    @id @default(uuid())
+  productId           String
+  product             Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  // Variant details
+  sku                 String    @unique
+  name                String
+  price               Float?    // Variant-specific price (overrides product price)
+
+  // Stock
+  stockQuantity       Int       @default(0)
+
+  // Variant attributes (e.g., color, size)
+  attributes          Json?     @default("{}")
+
+  // Media
+  images              String[]  @default([])
+
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([productId])
+  @@map("product_variants")
+}
+
+model Review {
+  id                  String    @id @default(uuid())
+  productId           String
+  product             Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId              String
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  rating              Int       // 1-5
+  title               String?
+  comment             String?
+
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([productId])
+  @@index([userId])
+  @@map("reviews")
+}
+
+model Vendor {
+  id                  String    @id @default(uuid())
+  name                String    @unique
+  slug                String    @unique
+  description         String?
+  logo                String?
+  email               String?
+  phone               String?
+  website             String?
+  status              String    @default("active")
+
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  products            Product[]
+
+  @@map("vendors")
+}

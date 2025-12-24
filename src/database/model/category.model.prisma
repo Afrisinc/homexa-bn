@@ -23,5 +23,8 @@ model Category {
   parent      Category?  @relation("CategoryChildren", fields: [parentId], references: [id], onDelete: NoAction)
   children    Category[] @relation("CategoryChildren")
 
+  // Products in this category
+  products    Product[]
+
   @@map("categories")
 }
