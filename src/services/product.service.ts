@@ -49,8 +49,9 @@ export class ProductService {
   async createProduct(data: any) {
     try {
       // Validate required fields
-      if (!data.name || !data.price || !data.categoryId) {
-        throw new Error('Missing required fields: name, price, categoryId');
+      const sellerId = data.seller_id || data.sellerId;
+      if (!data.name || !data.price || !data.categoryId || !sellerId) {
+        throw new Error('Missing required fields: name, price, categoryId, seller_id');
       }
 
       // Validate SKU uniqueness
@@ -66,33 +67,34 @@ export class ProductService {
         name: data.name,
         description: data.description,
         price: parseFloat(data.price),
-        compareAtPrice: data.compareAtPrice ? parseFloat(data.compareAtPrice) : null,
-        discountPercent: data.discountPercent ? parseFloat(data.discountPercent) : null,
+        compareAtPrice: data.compareAtPrice !== undefined ? parseFloat(data.compareAtPrice) : null,
+        discountPercent: data.discountPercent !== undefined ? parseFloat(data.discountPercent) : null,
         currency: data.currency || 'USD',
         sku: data.sku,
-        barcode: data.barcode,
+        barcode: data.barcode || null,
         categoryId: data.categoryId,
-        vendorId: data.vendorId,
-        brand: data.brand,
-        model: data.model,
-        stockQuantity: data.stock_quantity || data.stockQuantity || 0,
-        allowBackorder: data.allow_backorder || data.allowBackorder || false,
-        warehouseLocation: data.warehouse_location || data.warehouseLocation,
+        vendorId: data.vendorId || null,
+        sellerId,
+        brand: data.brand || null,
+        model: data.model || null,
+        stockQuantity: data.stockQuantity !== undefined ? data.stockQuantity : 0,
+        allowBackorder: data.allowBackorder !== undefined ? data.allowBackorder : false,
+        warehouseLocation: data.warehouseLocation || null,
         images: data.images || [],
         videos: data.videos || [],
-        weight: data.weight,
-        length: data.length,
-        width: data.width,
-        height: data.height,
+        weight: data.weight || null,
+        length: data.length || null,
+        width: data.width || null,
+        height: data.height || null,
         attributes: data.attributes || {},
-        visibility: data.visibility !== false,
-        returnable: data.returnable !== false,
-        isFeatured: data.is_featured || data.isFeatured || false,
-        taxRate: data.tax_rate || data.taxRate,
+        visibility: data.visibility !== undefined ? data.visibility : true,
+        returnable: data.returnable !== undefined ? data.returnable : true,
+        isFeatured: data.isFeatured !== undefined ? data.isFeatured : false,
+        taxRate: data.taxRate !== undefined ? parseFloat(data.taxRate) : null,
         tags: data.tags || [],
         status: data.status || 'active',
-        metaTitle: data.metaTitle,
-        metaDescription: data.metaDescription,
+        metaTitle: data.metaTitle || null,
+        metaDescription: data.metaDescription || null,
         seoKeywords: data.seoKeywords || [],
       });
 

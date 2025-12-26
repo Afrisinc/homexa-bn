@@ -42,14 +42,14 @@ export const CreateProductRequestSchema = {
       description: 'Current price',
       example: 249.99,
     },
-    compare_at_price: {
+    compareAtPrice: {
       type: 'number',
       nullable: true,
       minimum: 0,
       description: 'Original/list price for discounts',
       example: 270.0,
     },
-    discount_percent: {
+    discountPercent: {
       type: 'number',
       nullable: true,
       minimum: 0,
@@ -63,18 +63,18 @@ export const CreateProductRequestSchema = {
       default: 'USD',
       example: 'USD',
     },
-    category_id: {
+    categoryId: {
       type: 'string',
       format: 'uuid',
       description: 'Category ID',
     },
-    vendor_id: {
+    vendorId: {
       type: 'string',
       format: 'uuid',
       nullable: true,
       description: 'Vendor ID',
     },
-    seller_id: {
+    sellerId: {
       type: 'string',
       format: 'uuid',
       description: 'Seller ID (User with SELLER role)',
@@ -91,19 +91,19 @@ export const CreateProductRequestSchema = {
       description: 'Product model',
       example: 'A25',
     },
-    stock_quantity: {
+    stockQuantity: {
       type: 'number',
       minimum: 0,
       default: 0,
       description: 'Available stock count',
       example: 120,
     },
-    allow_backorder: {
+    allowBackorder: {
       type: 'boolean',
       default: false,
       description: 'Allow orders when out of stock',
     },
-    warehouse_location: {
+    warehouseLocation: {
       type: 'string',
       nullable: true,
       description: 'Storage location',
@@ -171,12 +171,12 @@ export const CreateProductRequestSchema = {
       default: true,
       description: 'Returnable product',
     },
-    is_featured: {
+    isFeatured: {
       type: 'boolean',
       default: false,
       description: 'Featured product flag',
     },
-    tax_rate: {
+    taxRate: {
       type: 'number',
       nullable: true,
       minimum: 0,
@@ -191,24 +191,24 @@ export const CreateProductRequestSchema = {
       description: 'Product tags',
       example: ['smartphone', 'android'],
     },
-    meta_title: {
+    metaTitle: {
       type: 'string',
       nullable: true,
       description: 'SEO meta title',
     },
-    meta_description: {
+    metaDescription: {
       type: 'string',
       nullable: true,
       description: 'SEO meta description',
     },
-    seo_keywords: {
+    seoKeywords: {
       type: 'array',
       items: { type: 'string' },
       default: [],
       description: 'SEO keywords',
     },
   },
-  required: ['name', 'description', 'sku', 'price', 'category_id', 'seller_id'],
+  required: ['name', 'description', 'sku', 'price', 'categoryId', 'sellerId'],
   additionalProperties: false,
 } as const;
 
@@ -230,23 +230,23 @@ export const UpdateProductRequestSchema = {
       minimum: 0,
       description: 'Current price',
     },
-    compare_at_price: {
+    compareAtPrice: {
       type: 'number',
       nullable: true,
       minimum: 0,
       description: 'Original/list price',
     },
-    discount_percent: {
+    discountPercent: {
       type: 'number',
       nullable: true,
       description: 'Discount percentage',
     },
-    category_id: {
+    categoryId: {
       type: 'string',
       format: 'uuid',
       description: 'Category ID',
     },
-    stock_quantity: {
+    stockQuantity: {
       type: 'number',
       minimum: 0,
       description: 'Stock quantity',
