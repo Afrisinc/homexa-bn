@@ -1,3 +1,10 @@
+enum UserRole {
+  ADMIN
+  SUPPORT
+  SELLER
+  BUYER
+}
+
 model User {
   id                String    @id @default(uuid())
   email             String    @unique
@@ -5,8 +12,15 @@ model User {
   firstName         String
   lastName          String
   phone             String
+  role              UserRole  @default(BUYER)
   resetPasswordOtp  String?
   otpExpiresAt      DateTime?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
+
+  // Relations
+  reviews           Review[]
+  productsAsSellerOf Product[] @relation("SellerProducts")
+
+  @@map("users")
 }
