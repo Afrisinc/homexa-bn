@@ -230,7 +230,6 @@ export class ChatService {
 
     return messageWithAttachments;
   }
-
   async getMessages(chatId: string, userId: string) {
     const chat = await this.chatRepo.findById(chatId, userId);
     if (!chat) {
