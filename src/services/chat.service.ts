@@ -1,9 +1,11 @@
 import fs from 'fs';
 import path from 'path';
 import { ChatRepository } from '../repositories/chat.repository';
+import { UserRepository } from '../repositories/user.repository';
 import { getIO } from '../utils/socket';
 
 export class ChatService {
+  private userRepo = new UserRepository();
   constructor(private chatRepo: ChatRepository) {}
 
   async getUserChats(userId: string) {
@@ -53,7 +55,10 @@ export class ChatService {
 
     const isCustomer = chat.customerId === userId;
     const participant = isCustomer ? chat.seller : chat.customer;
-    await this.chatRepo.markMessagesAsRead(chat.id, userId);
+
+    // Mark messages as read and notify sender
+    await this.markMessagesAsRead(chat.id, userId);
+
     // Format all messages
     const formattedMessages = (chat.messages || []).map((message: any) => {
       const sender = message.senderId === chat.customerId ? chat.customer : chat.seller;
@@ -83,7 +88,7 @@ export class ChatService {
       participantAvatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${participant.firstName}`,
       lastMessage: chat.messages[0]?.content || 'Start a conversation',
       lastMessageTime: chat.messages[0]?.createdAt || chat.createdAt,
-      unreadCount: chat._count?.messages || 0,
+      unreadCount: 0, // Always 0 because we just marked as read
       productId: chat.product.id,
       productName: chat.product.name,
       productImage: chat.product.images?.[0] || null,
@@ -172,28 +177,60 @@ export class ChatService {
     };
 
     const receiverId = chat.customerId === data.senderId ? chat.sellerId : chat.customerId;
+
+    // Get updated unread count for receiver
+    const receiverChats = await this.chatRepo.getUserChats(receiverId);
+    const receiverChat = receiverChats.find(c => c.id === chat.id);
+    const receiverUnreadCount = receiverChat?._count?.messages || 1;
+
     const io = getIO();
 
-    // Notify receiver of new message
+    const sender = await this.userRepo.findById(data.senderId);
+    const senderName = sender ? `${sender.firstName} ${sender.lastName}` : '';
+
+    // 1. Notify receiver of new message with senderName
     io.to(receiverId).emit('new_message', {
       chatId: chat.id,
-      message: messageWithAttachments,
+      message: {
+        id: messageWithAttachments.id,
+        senderId: data.senderId,
+        senderName,
+        message: messageWithAttachments.content,
+        timestamp: messageWithAttachments.createdAt,
+        isRead: false,
+        attachments: messageWithAttachments.attachments,
+      },
+      // Include chat summary for updating chat list
+      chatSummary: {
+        chatId: chat.id,
+        lastMessage: messageWithAttachments.content,
+        lastMessageTime: messageWithAttachments.createdAt,
+        unreadCount: receiverUnreadCount,
+        productId: chat.productId,
+      },
     });
 
-    // Notify both participants of chat list update (for real-time chat list sync)
-    io.to(data.senderId).emit('chat_updated', { chatId: chat.id });
-    io.to(receiverId).emit('chat_updated', { chatId: chat.id });
+    // 2. Update sender's chat list (their unread count is 0)
+    io.to(data.senderId).emit('chat_list_update', {
+      chatId: chat.id,
+      lastMessage: messageWithAttachments.content,
+      lastMessageTime: messageWithAttachments.createdAt,
+      unreadCount: 0,
+    });
 
-    // If this is a new chat, notify the seller
+    // 3. If this is a new chat, notify the receiver
     if (isNewChat) {
       io.to(receiverId).emit('new_chat', {
         chatId: chat.id,
         productId: data.productId,
+        customerId: chat.customerId,
+        sellerId: chat.sellerId,
       });
     }
 
     return messageWithAttachments;
   }
+
   async getMessages(chatId: string, userId: string) {
     const chat = await this.chatRepo.findById(chatId, userId);
     if (!chat) {
@@ -205,14 +242,8 @@ export class ChatService {
       throw new Error('Access denied. You are not a participant of this chat.');
     }
 
-    await this.chatRepo.markMessagesAsRead(chatId, userId);
-
-    const otherUserId = chat.customerId === userId ? chat.sellerId : chat.customerId;
-
-    getIO().to(otherUserId).emit('message_read', {
-      chatId,
-      readerId: userId,
-    });
+    // Mark as read and notify the other user
+    await this.markMessagesAsRead(chatId, userId);
 
     const messages = await this.chatRepo.getMessages(chatId, userId);
 
@@ -249,11 +280,30 @@ export class ChatService {
       throw new Error('Access denied. You are not a participant of this chat.');
     }
 
+    // Mark messages as read in database
     await this.chatRepo.markMessagesAsRead(chatId, userId);
+
+    // Determine the other participant (the sender)
     const senderId = chat.customerId === userId ? chat.sellerId : chat.customerId;
-    getIO().to(senderId).emit('message_read', {
+
+    const io = getIO();
+
+    // Notify sender that their messages were read (no readerName, avoid chat.customer/seller)
+    io.to(senderId).emit('messages_read', {
       chatId,
       readerId: userId,
+    });
+
+    // Update sender's chat list (unread count becomes 0 for this chat)
+    io.to(senderId).emit('chat_list_update', {
+      chatId,
+      unreadCount: 0,
+    });
+
+    // 3. Update reader's own chat list to reflect 0 unread
+    io.to(userId).emit('chat_list_update', {
+      chatId,
+      unreadCount: 0,
     });
 
     return { success: true };
@@ -279,7 +329,6 @@ export class ChatService {
               fs.unlinkSync(filePath);
             }
           } catch (err) {
-            // Log error but don't block deletion
             console.error('Failed to delete attachment file:', filePath, err);
           }
         }
@@ -322,9 +371,13 @@ export class ChatService {
     if (chat.customerId !== userId && chat.sellerId !== userId) {
       throw new Error('Access denied. You are not a participant of this chat.');
     }
+
     const result = await this.chatRepo.softDeleteChat(chatId, userId);
+
     const io = getIO();
+    // Notify only the user who deleted it
     io.to(userId).emit('chat_deleted', { chatId });
+
     return result;
   }
 }

@@ -9,9 +9,18 @@ export const initSocket = (server: any) => {
 
   io.on('connection', socket => {
     const userId = socket.handshake.auth.userId;
+
     if (userId) {
-      socket.join(userId); // 🔑 user-specific room
+      // Join user-specific room for receiving notifications
+      socket.join(userId);
+      console.log(`User ${userId} connected to socket`);
+    } else {
+      console.warn('Socket connection without userId');
     }
+
+    socket.on('disconnect', () => {
+      console.log(`User ${userId} disconnected from socket`);
+    });
   });
 };
 
