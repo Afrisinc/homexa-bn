@@ -1,10 +1,12 @@
 import fastifyCors from '@fastify/cors';
 import fastifyHelmet from '@fastify/helmet';
 import fastifyMultipart from '@fastify/multipart';
+import fastifyStatic from '@fastify/static';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUI from '@fastify/swagger-ui';
 import type { FastifyInstance } from 'fastify';
 import Fastify from 'fastify';
+import path from 'path';
 import { swaggerConfig, swaggerUiConfig } from './config/swagger.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { registerRoutes } from './routes/index.js';
@@ -42,6 +44,14 @@ const createApp = async (): Promise<FastifyInstance> => {
       limits: {
         fileSize: 5 * 1024 * 1024, // 5MB
       },
+    });
+
+    // ESM-compatible __dirname
+    // Register static file serving for uploads directory (use process.cwd() for absolute path)
+    logger.debug({}, 'Registering static file serving for uploads directory');
+    await app.register(fastifyStatic, {
+      root: path.resolve(process.cwd(), 'uploads'),
+      prefix: '/uploads/',
     });
 
     // Register Helmet for security headers

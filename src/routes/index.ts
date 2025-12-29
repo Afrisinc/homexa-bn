@@ -1,9 +1,10 @@
 import { HealthRouteSchema } from '@/schemas';
 import type { FastifyInstance } from 'fastify';
 import { authRoutes } from './auth.routes';
-import { userRoutes } from './user.routes';
 import { categoryRoutes } from './category.route';
+import { chatRoutes } from './chat.routes';
 import { productRoutes } from './product.routes.js';
+import { userRoutes } from './user.routes';
 
 export async function registerRoutes(app: FastifyInstance) {
   app.get(
@@ -20,4 +21,5 @@ export async function registerRoutes(app: FastifyInstance) {
   app.register(userRoutes);
   app.register(categoryRoutes);
   app.register(productRoutes);
+  app.register(chatRoutes);
 }

@@ -1,6 +1,7 @@
 import { env } from '@/config/env.js';
 import { connectToDatabase, gracefulShutdown } from '@/database/prisma.js';
 import { logger, startupLogger } from '@/utils/logger.js';
+import { initSocket } from '@/utils/socket.js';
 import { createApp } from './app.js';
 
 // Global error handlers
@@ -109,6 +110,11 @@ const start = async () => {
 
     startupLogger.info({ port: PORT, host: HOST }, 'Starting server');
     await app.listen({ port: PORT, host: HOST });
+
+    // Initialize Socket.IO after server starts
+    startupLogger.info({}, 'Initializing Socket.IO');
+    initSocket(app.server);
+    startupLogger.info({}, 'Socket.IO initialized successfully');
 
     startupLogger.info(
       {
