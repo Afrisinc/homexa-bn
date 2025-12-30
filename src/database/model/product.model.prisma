@@ -70,6 +70,7 @@ model Product {
   // Relations
   reviews             Review[]
   variants            ProductVariant[]
+  chats               Chat[]
 
   @@index([categoryId])
   @@index([vendorId])

@@ -21,6 +21,8 @@ model User {
   // Relations
   reviews           Review[]
   productsAsSellerOf Product[] @relation("SellerProducts")
+  customerChats     Chat[]    @relation("CustomerChats")
+  sellerChats       Chat[]    @relation("SellerChats")
 
   @@map("users")
 }
