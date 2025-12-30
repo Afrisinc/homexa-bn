@@ -307,8 +307,6 @@ export class ChatRepository {
   }
   // Soft delete a chat for a user (does not remove from DB)
   async softDeleteChat(chatId: string, userId: string) {
-    // You may want to use a join table or a field like deletedFor: String[] on Chat model for per-user soft delete
-    // For now, let's assume you add a deletedFor: String[] field to Chat (like Message)
     return prisma.chat.update({
       where: { id: chatId },
       data: {

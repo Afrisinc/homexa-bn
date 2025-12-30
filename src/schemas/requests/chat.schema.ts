@@ -98,16 +98,3 @@ export const MessageParamsSchema = {
   },
   required: ['messageId'],
 } as const;
-
-// export const DeleteChatParamsSchema = {
-//   type: 'object',
-//   properties: {
-//     chatId: {
-//       type: 'string',
-//       format: 'uuid',
-//       description: 'ID of the chat',
-//       example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
-//     },
-//   },
-//   required: ['chatId'],
-// } as const;

@@ -14,19 +14,6 @@ import {
 } from '../responses/chat.schema.js';
 import { ErrorResponseSchema } from '../responses/common.schema.js';
 
-// export const DeleteChatRouteSchema = {
-//   tags: ['chats'],
-//   summary: 'Soft delete a chat',
-//   description: 'Soft delete a chat for the authenticated user (does not remove from DB)',
-//   security: [{ bearerAuth: [] }],
-//   params: DeleteChatParamsSchema,
-//   response: {
-//     200: DeleteChatResponseSchema,
-//     400: ErrorResponseSchema,
-//     401: ErrorResponseSchema,
-//   },
-// } as const;
-
 export const GetMyChatsRouteSchema = {
   tags: ['chats'],
   summary: 'Get my chats',

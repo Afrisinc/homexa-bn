@@ -1,20 +1,3 @@
-// Response schema for chat-related API endpoints
-// export const DeleteChatResponseSchema = {
-//   type: 'object',
-//   properties: {
-//     success: { type: 'boolean', example: true },
-//     resp_msg: { type: 'string', example: 'Chat deleted (soft)' },
-//     resp_code: { type: 'number', example: 1000 },
-//     data: {
-//       type: 'object',
-//       properties: {
-//         chatId: { type: 'string' },
-//       },
-//     },
-//   },
-//   required: ['success', 'resp_msg', 'resp_code', 'data'],
-// } as const;
-
 export const GetMyChatsResponseSchema = {
   type: 'object',
   properties: {
