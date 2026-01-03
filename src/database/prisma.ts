@@ -26,12 +26,6 @@ const prismaConfig = {
       level: 'warn' as const,
     },
   ],
-  // Connection pool settings
-  datasources: {
-    db: {
-      url: process.env.DATABASE_URL,
-    },
-  },
 };
 
 // Create Prisma client with singleton pattern for development
