@@ -1,4 +1,5 @@
 import type { FastifyCorsOptions } from '@fastify/cors';
+import { logger } from '@/utils/logger.js';
 
 /**
  * Parse CORS origins from environment variable
@@ -38,6 +39,7 @@ const getCorsConfig = (): FastifyCorsOptions => {
   }
 
   const origins = parseOrigins(allowedOrigins);
+  logger.info({ origins }, 'CORS enabled for origins');
 
   return {
     origin: origins,
@@ -67,12 +69,19 @@ const getSocketIoCorsConfig = () => {
 
   // Production: Restrict to specific origins
   if (!allowedOrigins) {
-    throw new Error(
-      'CORS_ORIGINS environment variable is required in production. ' + 'Format: "origin1,origin2,origin3"'
+    logger.warn(
+      {},
+      'WARNING: CORS_ORIGINS environment variable is not set. ' +
+        'Allowing all origins for Socket.IO. For security, set CORS_ORIGINS in production.'
     );
+    return {
+      origin: '*',
+      credentials: false,
+    };
   }
 
   const origins = parseOrigins(allowedOrigins);
+  logger.info({ origins }, 'Socket.IO CORS enabled for origins');
 
   return {
     origin: origins,
