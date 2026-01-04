@@ -1,10 +1,12 @@
 import { Server } from 'socket.io';
+import { getSocketIoCorsConfig } from '@/config/cors.js';
 
 let io: Server | undefined;
 
 export const initSocket = (server: any) => {
+  const corsConfig = getSocketIoCorsConfig();
   io = new Server(server, {
-    cors: { origin: '*' },
+    cors: corsConfig,
   });
 
   io.on('connection', socket => {

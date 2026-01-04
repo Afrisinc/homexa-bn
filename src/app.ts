@@ -7,6 +7,7 @@ import fastifySwaggerUI from '@fastify/swagger-ui';
 import type { FastifyInstance } from 'fastify';
 import Fastify from 'fastify';
 import path from 'path';
+import { getCorsConfig } from './config/cors.js';
 import { swaggerConfig, swaggerUiConfig } from './config/swagger.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { registerRoutes } from './routes/index.js';
@@ -32,11 +33,8 @@ const createApp = async (): Promise<FastifyInstance> => {
   try {
     // Register CORS plugin for cross-origin requests
     logger.debug({}, 'Registering CORS plugin');
-    await app.register(fastifyCors, {
-      origin: true,
-      credentials: true,
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    });
+    const corsConfig = getCorsConfig();
+    await app.register(fastifyCors, corsConfig);
 
     // Register Multipart for file uploads
     logger.debug({}, 'Registering Multipart plugin for file uploads');
