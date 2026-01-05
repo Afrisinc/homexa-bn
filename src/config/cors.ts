@@ -1,5 +1,5 @@
-import type { FastifyCorsOptions } from '@fastify/cors';
 import { logger } from '@/utils/logger.js';
+import type { FastifyCorsOptions } from '@fastify/cors';
 
 /**
  * Parse CORS origins from environment variable
