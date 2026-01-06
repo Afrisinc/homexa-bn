@@ -80,7 +80,7 @@ jobs:
             set -e
             APP_PATH="/opt/apps/homexa-api"
             cd $APP_PATH
-            cat > .env.production << 'EOF'
+            cat > .env << 'EOF'
             NODE_ENV=production
             DATABASE_URL=${{ secrets.DATABASE_URL }}
             JWT_SECRET=${{ secrets.JWT_SECRET }}
