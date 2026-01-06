@@ -1,8 +1,8 @@
-import { env } from '@/config/env.js';
-import { connectToDatabase, gracefulShutdown } from '@/database/prisma.js';
-import { logger, startupLogger } from '@/utils/logger.js';
-import { initSocket } from '@/utils/socket.js';
-import { createApp } from './app.js';
+import { env } from '@/config/env';
+import { connectToDatabase, gracefulShutdown } from '@/database/prisma';
+import { logger, startupLogger } from '@/utils/logger';
+import { initSocket } from '@/utils/socket';
+import { createApp } from './app';
 
 // Global error handlers
 process.on('uncaughtException', (error: Error) => {

@@ -1,5 +1,5 @@
 import { logger } from '@/utils/logger.js';
-import prisma from './prisma.js';
+import prisma from './prisma';
 import bcrypt from 'bcryptjs';
 
 async function main() {

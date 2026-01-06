@@ -1,5 +1,5 @@
 import type { FastifySwaggerUiOptions } from '@fastify/swagger-ui';
-import { env } from './env.js';
+import { env } from './env';
 
 /**
  * Swagger/OpenAPI Configuration

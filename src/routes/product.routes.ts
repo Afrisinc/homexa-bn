@@ -12,7 +12,7 @@ import {
   SearchProductsRouteSchema,
   UpdateProductRouteSchema,
   UpdateProductStockRouteSchema,
-} from '../schemas/index.js';
+} from '../schemas/index';
 
 export async function productRoutes(fastify: FastifyInstance) {
   // Public routes (no auth required)

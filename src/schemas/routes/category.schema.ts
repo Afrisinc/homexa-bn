@@ -2,15 +2,15 @@ import {
   CategoryParamsSchema,
   CreateCategoryRequestSchema,
   UpdateCategoryRequestSchema,
-} from '../requests/category.schema.js';
+} from '../requests/category.schema';
 import {
   CreateCategoryResponseSchema,
   DeleteCategoryResponseSchema,
   GetAllCategoriesResponseSchema,
   GetCategoryResponseSchema,
   UpdateCategoryResponseSchema,
-} from '../responses/category.schema.js';
-import { ErrorResponseSchema } from '../responses/common.schema.js';
+} from '../responses/category.schema';
+import { ErrorResponseSchema } from '../responses/common.schema';
 
 export const GetCategoryRouteSchema = {
   tags: ['categories'],

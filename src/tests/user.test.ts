@@ -1,6 +1,6 @@
 // import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
 // import { FastifyInstance } from 'fastify';
-// import { createApp } from '../app.js';
+// import { createApp } from '../app';
 // import { PrismaClient } from '@prisma/client';
 // import bcrypt from 'bcryptjs';
 

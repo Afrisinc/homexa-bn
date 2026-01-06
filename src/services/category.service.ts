@@ -1,5 +1,5 @@
-import { CategoryMapper } from '../mappers/categoryMapper .js';
-import { CategoryRepository } from '../repositories/category.repository.js';
+import { CategoryMapper } from '../mappers/categoryMapper ';
+import { CategoryRepository } from '../repositories/category.repository';
 
 export class CategoryService {
   private categoryRepository: CategoryRepository;

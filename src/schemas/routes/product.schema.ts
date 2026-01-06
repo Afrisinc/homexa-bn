@@ -2,7 +2,7 @@ import {
   CreateProductRequestSchema,
   ProductParamsSchema,
   UpdateProductRequestSchema,
-} from '../requests/product.schema.js';
+} from '../requests/product.schema';
 import {
   CreateProductResponseSchema,
   DeleteProductResponseSchema,
@@ -10,8 +10,8 @@ import {
   GetProductResponseSchema,
   SearchProductsResponseSchema,
   UpdateProductResponseSchema,
-} from '../responses/product.schema.js';
-import { ErrorResponseSchema } from '../responses/common.schema.js';
+} from '../responses/product.schema';
+import { ErrorResponseSchema } from '../responses/common.schema';
 
 export const GetAllProductsRouteSchema = {
   tags: ['products'],

@@ -3,7 +3,7 @@ import {
   MarkAsReadRequestSchema,
   MessageParamsSchema,
   SendMessageRequestSchema,
-} from '../requests/chat.schema.js';
+} from '../requests/chat.schema';
 import {
   // DeleteChatResponseSchema,
   DeleteMessageResponseSchema,
@@ -11,8 +11,8 @@ import {
   GetMyChatsResponseSchema,
   MarkAsReadResponseSchema,
   SendMessageResponseSchema,
-} from '../responses/chat.schema.js';
-import { ErrorResponseSchema } from '../responses/common.schema.js';
+} from '../responses/chat.schema';
+import { ErrorResponseSchema } from '../responses/common.schema';
 
 export const GetMyChatsRouteSchema = {
   tags: ['chats'],

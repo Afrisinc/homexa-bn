@@ -7,11 +7,11 @@ import fastifySwaggerUI from '@fastify/swagger-ui';
 import type { FastifyInstance } from 'fastify';
 import Fastify from 'fastify';
 import path from 'path';
-import { getCorsConfig } from './config/cors.js';
-import { swaggerConfig, swaggerUiConfig } from './config/swagger.js';
-import { errorHandler } from './middlewares/errorHandler.js';
-import { registerRoutes } from './routes/index.js';
-import { logger } from './utils/logger.js';
+import { getCorsConfig } from './config/cors';
+import { swaggerConfig, swaggerUiConfig } from './config/swagger';
+import { errorHandler } from './middlewares/errorHandler';
+import { registerRoutes } from './routes/index';
+import { logger } from './utils/logger';
 
 /**
  * Creates and configures the Fastify application instance

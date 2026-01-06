@@ -3,7 +3,7 @@ import type { FastifyInstance } from 'fastify';
 import { authRoutes } from './auth.routes';
 import { categoryRoutes } from './category.route';
 import { chatRoutes } from './chat.routes';
-import { productRoutes } from './product.routes.js';
+import { productRoutes } from './product.routes';
 import { userRoutes } from './user.routes';
 
 export async function registerRoutes(app: FastifyInstance) {
