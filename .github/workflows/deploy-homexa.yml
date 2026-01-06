@@ -78,6 +78,7 @@ jobs:
           port: ${{ secrets.VPS_PORT != '' && secrets.VPS_PORT || 22 }}
           timeout: 30s
           command_timeout: 10m
+          skip_git: true
           script: |
             set -e
             APP_PATH="${{ secrets.VPS_APP_PATH }}"
