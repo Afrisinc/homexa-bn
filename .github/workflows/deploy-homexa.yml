@@ -45,8 +45,6 @@ jobs:
             ghcr.io/${{ secrets.GHCR_OWNER }}/homexa-api
           tags: |
             type=raw,value=latest
-            type=sha
-
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
