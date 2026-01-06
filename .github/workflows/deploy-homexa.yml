@@ -10,11 +10,11 @@ on:
       - develop
       - master
 
-env: {}
-
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    # REQUIRED for GHCR push using GITHUB_TOKEN
     permissions:
       contents: read
       packages: write
@@ -29,22 +29,27 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      # 🔐 Login to GHCR using built-in GitHub token
       - name: Log in to GHCR
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ secrets.GHCR_OWNER }}
-          password: ${{ secrets.GHCR_TOKEN }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata
+      # 🏷 Correct metadata usage
+      - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
+          images: |
+            ghcr.io/${{ github.repository_owner }}/homexa-api
           tags: |
-            ghcr.io/${{ secrets.GHCR_OWNER }}/homexa-backoffice:latest
-            ghcr.io/${{ secrets.GHCR_OWNER }}/homexa-backoffice:${{ github.sha }}
+            type=raw,value=latest
+            type=sha
 
+      # 🐳 Build & Push image
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
@@ -53,8 +58,8 @@ jobs:
           platforms: linux/amd64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=ghcr.io/${{ secrets.GHCR_OWNER }}/homexa-backoffice:buildcache
-          cache-to: type=registry,ref=ghcr.io/${{ secrets.GHCR_OWNER }}/homexa-backoffice:buildcache,mode=max
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/homexa-api:buildcache
+          cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/homexa-api:buildcache,mode=max
 
   deploy:
     needs: build
@@ -68,25 +73,29 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          port: ${{ secrets.VPS_PORT != '' && secrets.VPS_PORT || 22 }}
+          port: ${{ secrets.VPS_PORT || 22 }}
           timeout: 30s
           command_timeout: 10m
           script: |
             set -e
+
             APP_PATH="${{ secrets.VPS_APP_PATH }}"
             APP_PATH=${APP_PATH:=/opt/apps/homexa-api}
+
             cd $APP_PATH
             git pull origin ${{ github.ref_name }}
+
             cat > .env.production << 'EOF'
             NODE_ENV=production
             DATABASE_URL=${{ secrets.DATABASE_URL }}
             JWT_SECRET=${{ secrets.JWT_SECRET }}
             CORS_ORIGINS=${{ secrets.CORS_ORIGINS }}
-            LOG_LEVEL=${{ secrets.LOG_LEVEL != '' && secrets.LOG_LEVEL || 'info' }}
+            LOG_LEVEL=${{ secrets.LOG_LEVEL || 'info' }}
             PORT=3004
             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            API_PORT=${{ secrets.API_PORT != '' && secrets.API_PORT || 3004 }}
+            API_PORT=${{ secrets.API_PORT || 3004 }}
             EOF
+
             docker compose pull
             docker compose up -d --remove-orphans
             docker image prune -af
