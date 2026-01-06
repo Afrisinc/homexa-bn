@@ -21,7 +21,7 @@ COPY . .
 
 RUN yarn install --frozen-lockfile
 RUN yarn prisma generate || echo "Prisma generate completed with status: $?"
-RUN yarn build
+RUN NODE_OPTIONS="--max-old-space-size=4096" yarn build
 
 FROM base AS runner
 WORKDIR /app
