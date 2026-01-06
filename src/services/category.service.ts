@@ -1,4 +1,4 @@
-import { CategoryMapper } from '../mappers/categoryMapper ';
+import { CategoryMapper } from '../mappers/categoryMapper';
 import { CategoryRepository } from '../repositories/category.repository';
 
 export class CategoryService {
