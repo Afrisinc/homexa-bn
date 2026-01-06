@@ -44,7 +44,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ghcr.io/${{ github.repository_owner }}/homexa-api
+            ghcr.io/${{  secrets.GHCR_OWNER }}/homexa-bn
           tags: |
             type=raw,value=latest
             type=sha
@@ -58,8 +58,8 @@ jobs:
           platforms: linux/amd64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/homexa-api:buildcache
-          cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/homexa-api:buildcache,mode=max
+          cache-from: type=registry,ref=ghcr.io/${{ secrets.GHCR_OWNER }}/homexa-bn:buildcache
+          cache-to: type=registry,ref=ghcr.io/${{ secrets.GHCR_OWNER }}/homexa-bn:buildcache,mode=max
 
   deploy:
     needs: build
