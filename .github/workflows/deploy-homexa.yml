@@ -78,13 +78,8 @@ jobs:
           command_timeout: 10m
           script: |
             set -e
-
-            APP_PATH="${{ secrets.VPS_APP_PATH }}"
-            APP_PATH=${APP_PATH:=/opt/apps/homexa-api}
-
+            APP_PATH="/opt/apps/homexa-api"
             cd $APP_PATH
-            git pull origin ${{ github.ref_name }}
-
             cat > .env.production << 'EOF'
             NODE_ENV=production
             DATABASE_URL=${{ secrets.DATABASE_URL }}
