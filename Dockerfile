@@ -11,7 +11,7 @@ WORKDIR /app
 # Copy package files first so corepack can read packageManager
 COPY package.json yarn.lock* .yarnrc.yml ./
 
-RUN yarn install --frozen-lockfile
+RUN yarn install --immutable
 
 FROM base AS builder
 WORKDIR /app
@@ -19,7 +19,7 @@ WORKDIR /app
 COPY package.json yarn.lock* .yarnrc.yml ./
 COPY . .
 
-RUN yarn install --frozen-lockfile
+RUN yarn install --immutable
 RUN yarn prisma generate || echo "Prisma generate completed with status: $?"
 RUN NODE_OPTIONS="--max-old-space-size=4096" yarn build
 
