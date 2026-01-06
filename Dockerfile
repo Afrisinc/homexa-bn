@@ -10,7 +10,7 @@ WORKDIR /app
 # Copy package files first so corepack can read packageManager
 COPY package.json yarn.lock* ./
 
-RUN yarn install --immutable --production && yarn cache clean
+RUN yarn workspaces focus --all --production && yarn cache clean
 
 FROM base AS builder
 WORKDIR /app
