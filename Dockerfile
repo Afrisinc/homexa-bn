@@ -8,14 +8,14 @@ FROM base AS deps
 WORKDIR /app
 
 # Copy package files first so corepack can read packageManager
-COPY package.json yarn.lock* ./
+COPY package.json yarn.lock* .yarnrc.yml ./
 
-RUN yarn install --immutable && yarn cache clean
+RUN yarn install --immutable
 
 FROM base AS builder
 WORKDIR /app
 
-COPY package.json yarn.lock* ./
+COPY package.json yarn.lock* .yarnrc.yml ./
 COPY . .
 
 RUN yarn install --immutable
