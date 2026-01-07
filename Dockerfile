@@ -2,6 +2,10 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+
+# Install OpenSSL 1.1 compatibility
+RUN apk add --no-cache openssl1.1-compat bash
+
 # Enable Corepack so Yarn 4 works
 RUN corepack enable
 
