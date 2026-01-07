@@ -8,7 +8,7 @@ import type { FastifyInstance } from 'fastify';
 import Fastify from 'fastify';
 import path from 'path';
 import { getCorsConfig } from './config/cors';
-import { swaggerConfig, swaggerUiConfig, swaggerCspDirectives } from './config/swagger';
+import { swaggerConfig, swaggerCspDirectives, swaggerUiConfig } from './config/swagger';
 import { errorHandler } from './middlewares/errorHandler';
 import { registerRoutes } from './routes/index';
 import { logger } from './utils/logger';
@@ -20,7 +20,7 @@ import { logger } from './utils/logger';
 const createApp = async (): Promise<FastifyInstance> => {
   const app = Fastify({
     logger: true,
-    trustProxy: true,
+    trustProxy: false,
     ajv: {
       customOptions: {
         removeAdditional: 'all',

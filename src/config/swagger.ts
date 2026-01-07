@@ -1,23 +1,16 @@
 import type { FastifySwaggerUiOptions } from '@fastify/swagger-ui';
-import { env } from './env';
 
 /**
- * Swagger/OpenAPI Configuration
- * Defines API documentation settings including authentication, servers, and UI options
+ * Determine if app is in production
  */
-
-const isDevelopment = process.env.NODE_ENV !== 'production';
 const isProduction = process.env.NODE_ENV === 'production';
 
-/**
- * Base URL configuration for Swagger UI
- * Used to determine the correct server URL for API requests
- */
-const getBaseUrl = (): string => {
+const getServerUrl = (): string => {
   if (isProduction) {
-    return process.env.API_BASE_URL || 'https://api.example.com';
+    return process.env.API_BASE_URL || 'https://api.afrisinc.com';
   }
-  return `http://localhost:${env.PORT}`;
+  // Use localhost + port from env
+  return `http://localhost:${process.env.PORT || 3003}`;
 };
 
 /**
@@ -44,23 +37,12 @@ export const swaggerConfig = {
         url: 'https://opensource.org/licenses/MIT',
       },
     },
+    // 🔑 Use relative URL only
     servers: [
       {
-        url: getBaseUrl(),
-        description: isDevelopment ? 'Development Server' : 'Production Server',
+        url: getServerUrl(),
+        description: isProduction ? 'Production Server' : 'Development Server',
       },
-      ...(isDevelopment
-        ? [
-            {
-              url: 'http://localhost:3004',
-              description: 'Local Development',
-            },
-            {
-              url: getBaseUrl(),
-              description: 'Production Server',
-            },
-          ]
-        : []),
     ],
     components: {
       securitySchemes: {
@@ -70,35 +52,17 @@ export const swaggerConfig = {
           bearerFormat: 'JWT',
           description:
             'JWT Bearer token for authentication. ' +
-            'Obtain a token from the /auth/login endpoint and include it in the Authorization header: "Authorization: Bearer <token>"',
+            'Include in the header: "Authorization: Bearer <token>"',
         },
       },
     },
     tags: [
-      {
-        name: 'health',
-        description: 'Service Health & Status',
-      },
-      {
-        name: 'auth',
-        description: 'Authentication (Login, Register, Refresh)',
-      },
-      {
-        name: 'users',
-        description: 'User Management',
-      },
-      {
-        name: 'categories',
-        description: 'Category Management',
-      },
-      {
-        name: 'products',
-        description: 'Product Management',
-      },
-      {
-        name: 'chat',
-        description: 'Chat & Messaging',
-      },
+      { name: 'health', description: 'Service Health & Status' },
+      { name: 'auth', description: 'Authentication (Login, Register, Refresh)' },
+      { name: 'users', description: 'User Management' },
+      { name: 'categories', description: 'Category Management' },
+      { name: 'products', description: 'Product Management' },
+      { name: 'chat', description: 'Chat & Messaging' },
     ],
     externalDocs: {
       description: 'GitHub Repository',
@@ -110,11 +74,10 @@ export const swaggerConfig = {
 
 /**
  * Fastify Swagger UI Plugin Configuration
- * Customizes the Swagger UI appearance and behavior
  */
 export const swaggerUiConfig: FastifySwaggerUiOptions = {
   routePrefix: '/docs',
-  staticCSP: false,
+  staticCSP: false, // Important to disable strict CSP
   uiConfig: {
     layout: 'BaseLayout',
     deepLinking: true,
@@ -129,26 +92,30 @@ export const swaggerUiConfig: FastifySwaggerUiOptions = {
 };
 
 /**
- * Content Security Policy Directives for Swagger UI
- * Allows CDN resources needed for Swagger UI to render properly
- * Uses https:// protocol for CDN URLs to support reverse proxy with HTTPS
+ * Content Security Policy for Swagger UI
+ * Allows CDN + Cloudflare resources
  */
 export const swaggerCspDirectives = {
   defaultSrc: ["'self'"],
   styleSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net', 'https://unpkg.com'],
-  scriptSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net', 'https://unpkg.com'],
-  imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
-  fontSrc: ["'self'", 'data:', 'https:', 'https://cdn.jsdelivr.net'],
-  connectSrc: ["'self'"],
-  frameSrc: ["'none'"],
+  scriptSrc: [
+    "'self'",
+    "'unsafe-inline'",
+    'https://cdn.jsdelivr.net',
+    'https://unpkg.com',
+    'https://static.cloudflareinsights.com', // optional for CF analytics
+  ],
+  imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
+  fontSrc: ["'self'", 'data:', 'https:'],
+  connectSrc: ["'self'", 'https:'],
   objectSrc: ["'none'"],
+  frameSrc: ["'none'"],
   mediaSrc: ["'self'"],
   childSrc: ["'none'"],
 };
 
 /**
- * ReDoc Configuration (alternative documentation UI)
- * Uncomment to enable ReDoc alongside Swagger UI
+ * ReDoc Configuration (Optional)
  */
 export const redocConfig = {
   routePrefix: '/redoc',
