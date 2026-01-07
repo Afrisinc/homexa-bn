@@ -1,10 +1,10 @@
-FROM node:20-alpine AS builder
+FROM node:20-bullseye AS builder
 
 WORKDIR /app
 
 
-# Install OpenSSL 1.1 compatibility
-RUN apk add --no-cache openssl1.1-compat bash
+# Install OpenSSL 1.1
+RUN apt-get update && apt-get install -y libssl1.1 bash
 
 # Enable Corepack so Yarn 4 works
 RUN corepack enable
@@ -25,9 +25,11 @@ RUN npx prisma generate
 # Build app (if TypeScript)
 RUN yarn build
 
+
 # Final image
-FROM node:20-alpine
+FROM node:20-bullseye
 WORKDIR /app
+RUN apt-get update && apt-get install -y libssl1.1 bash
 COPY --from=builder /app ./
 EXPOSE 3004
 CMD ["node", "dist/server.js"]
