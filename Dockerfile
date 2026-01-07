@@ -1,51 +1,31 @@
-# Use Node.js 20 Alpine as base image
-FROM node:20-alpine AS base
+# 1️⃣ Base image
+FROM node:20-alpine AS builder
 
-RUN apk add --no-cache python3 make g++
-RUN corepack enable
-
-# Install dependencies only when needed
-FROM base AS deps
 WORKDIR /app
 
-# Copy package files first so corepack can read packageManager
-COPY package.json yarn.lock* .yarnrc.yml ./
+# 2️⃣ Install dependencies
+COPY package.json yarn.lock* ./
+RUN yarn install
 
-RUN yarn install --immutable
-
-FROM base AS builder
-WORKDIR /app
-
-COPY package.json yarn.lock* .yarnrc.yml ./
+# 3️⃣ Copy code
 COPY . .
 
-RUN yarn install --immutable
-RUN yarn prisma generate || echo "Prisma generate completed with status: $?"
-RUN NODE_OPTIONS="--max-old-space-size=4096" yarn build
+# 4️⃣ Generate Prisma client
+RUN npx prisma generate
 
-FROM base AS runner
+# 5️⃣ Build your app (if using TypeScript)
+RUN yarn run build
+
+# 6️⃣ Final image
+FROM node:20-alpine
+
 WORKDIR /app
 
-# Create non-root user before copying files
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nodejs
+# Copy built code and node_modules
+COPY --from=builder /app ./
 
-COPY --from=deps --chown=nodejs:nodejs /app/node_modules ./node_modules
-COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
-COPY --from=builder --chown=nodejs:nodejs /app/src/database/model ./src/database/model
-COPY --from=builder --chown=nodejs:nodejs /app/package.json ./package.json
-COPY --from=builder --chown=nodejs:nodejs /app/yarn.lock ./yarn.lock
+# Expose port
+EXPOSE 3004
 
-# Prisma client generation in final stage
-RUN yarn prisma generate || echo "Prisma client already generated"
-
-EXPOSE 3000 3004
-
-ENV NODE_ENV=production
-
-USER nodejs
-
-HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => { process.exit(1) })"
-
+# Start app
 CMD ["node", "dist/server.js"]
