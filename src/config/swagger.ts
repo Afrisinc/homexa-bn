@@ -131,13 +131,14 @@ export const swaggerUiConfig: FastifySwaggerUiOptions = {
 /**
  * Content Security Policy Directives for Swagger UI
  * Allows CDN resources needed for Swagger UI to render properly
+ * Uses https:// protocol for CDN URLs to support reverse proxy with HTTPS
  */
 export const swaggerCspDirectives = {
   defaultSrc: ["'self'"],
-  styleSrc: ["'self'", "'unsafe-inline'", 'cdn.jsdelivr.net', 'unpkg.com'],
-  scriptSrc: ["'self'", "'unsafe-inline'", 'cdn.jsdelivr.net', 'unpkg.com'],
+  styleSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net', 'https://unpkg.com'],
+  scriptSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net', 'https://unpkg.com'],
   imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
-  fontSrc: ["'self'", 'data:', 'https:', 'cdn.jsdelivr.net'],
+  fontSrc: ["'self'", 'data:', 'https:', 'https://cdn.jsdelivr.net'],
   connectSrc: ["'self'"],
   frameSrc: ["'none'"],
   objectSrc: ["'none'"],

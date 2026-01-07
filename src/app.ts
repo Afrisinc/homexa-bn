@@ -20,6 +20,7 @@ import { logger } from './utils/logger';
 const createApp = async (): Promise<FastifyInstance> => {
   const app = Fastify({
     logger: true,
+    trustProxy: true,
     ajv: {
       customOptions: {
         removeAdditional: 'all',
