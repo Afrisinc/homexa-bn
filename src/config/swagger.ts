@@ -26,17 +26,18 @@ const getBaseUrl = (): string => {
  */
 export const swaggerConfig = {
   mode: 'dynamic' as const,
-  swagger: {
+  openapi: {
+    openapi: '3.0.0',
     info: {
-      title: 'Backend REST API',
+      title: 'Homexa API',
       description:
         'Production-ready REST API built with Fastify, TypeScript, and Prisma ORM. ' +
-        'This API provides comprehensive user management and authentication features with JWT-based security.',
+        'Comprehensive e-commerce and chat functionality with JWT-based authentication.',
       version: '1.0.0',
       contact: {
         name: 'API Support',
-        url: 'https://github.com/yourusername/backend-template',
-        email: 'support@example.com',
+        url: 'https://github.com/afrisinc/homexa-bn',
+        email: 'support@homexa.com',
       },
       license: {
         name: 'MIT',
@@ -51,39 +52,57 @@ export const swaggerConfig = {
       ...(isDevelopment
         ? [
             {
-              url: 'http://localhost:3000',
+              url: 'http://localhost:3004',
               description: 'Local Development',
+            },
+            {
+              url: getBaseUrl(),
+              description: 'Production Server',
             },
           ]
         : []),
     ],
-    securityDefinitions: {
-      bearerAuth: {
-        type: 'apiKey' as const,
-        name: 'Authorization',
-        in: 'header' as const,
-        description:
-          'JWT Bearer token for authentication. ' +
-          'Obtain a token from the /auth/login endpoint and include it in the Authorization header: "Authorization: Bearer <token>"',
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http' as const,
+          scheme: 'bearer' as const,
+          bearerFormat: 'JWT',
+          description:
+            'JWT Bearer token for authentication. ' +
+            'Obtain a token from the /auth/login endpoint and include it in the Authorization header: "Authorization: Bearer <token>"',
+        },
       },
     },
     tags: [
       {
         name: 'health',
-        description: 'Health Check - Service availability and status monitoring',
+        description: 'Service Health & Status',
       },
       {
         name: 'auth',
-        description: 'Authentication - User registration and login operations',
+        description: 'Authentication (Login, Register, Refresh)',
       },
       {
         name: 'users',
-        description: 'User Management - User profile and account operations',
+        description: 'User Management',
+      },
+      {
+        name: 'categories',
+        description: 'Category Management',
+      },
+      {
+        name: 'products',
+        description: 'Product Management',
+      },
+      {
+        name: 'chat',
+        description: 'Chat & Messaging',
       },
     ],
     externalDocs: {
-      description: 'Find more info here',
-      url: 'https://github.com/yourusername/backend-template',
+      description: 'GitHub Repository',
+      url: 'https://github.com/afrisinc/homexa-bn',
     },
   },
   hideUntagged: false,
@@ -95,15 +114,35 @@ export const swaggerConfig = {
  */
 export const swaggerUiConfig: FastifySwaggerUiOptions = {
   routePrefix: '/docs',
+  staticCSP: false,
   uiConfig: {
-    docExpansion: 'list',
-    deepLinking: true,
     layout: 'BaseLayout',
-    defaultModelsExpandDepth: 2,
+    deepLinking: true,
+    docExpansion: 'none',
     defaultModelExpandDepth: 2,
+    filter: true,
+    tryItOutEnabled: true,
+    persistAuthorization: true,
+    displayOperationId: false,
   },
-  staticCSP: true,
   transformSpecificationClone: true,
+};
+
+/**
+ * Content Security Policy Directives for Swagger UI
+ * Allows CDN resources needed for Swagger UI to render properly
+ */
+export const swaggerCspDirectives = {
+  defaultSrc: ["'self'"],
+  styleSrc: ["'self'", "'unsafe-inline'", 'cdn.jsdelivr.net', 'unpkg.com'],
+  scriptSrc: ["'self'", "'unsafe-inline'", 'cdn.jsdelivr.net', 'unpkg.com'],
+  imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
+  fontSrc: ["'self'", 'data:', 'https:', 'cdn.jsdelivr.net'],
+  connectSrc: ["'self'"],
+  frameSrc: ["'none'"],
+  objectSrc: ["'none'"],
+  mediaSrc: ["'self'"],
+  childSrc: ["'none'"],
 };
 
 /**
@@ -113,7 +152,7 @@ export const swaggerUiConfig: FastifySwaggerUiOptions = {
 export const redocConfig = {
   routePrefix: '/redoc',
   uiConfig: {
-    title: 'Backend API - ReDoc Documentation',
+    title: 'Homexa API - ReDoc Documentation',
     specUrl: '/swagger/json',
     hideHostname: false,
     hideDownloadButton: false,

@@ -8,7 +8,7 @@ import type { FastifyInstance } from 'fastify';
 import Fastify from 'fastify';
 import path from 'path';
 import { getCorsConfig } from './config/cors';
-import { swaggerConfig, swaggerUiConfig } from './config/swagger';
+import { swaggerConfig, swaggerUiConfig, swaggerCspDirectives } from './config/swagger';
 import { errorHandler } from './middlewares/errorHandler';
 import { registerRoutes } from './routes/index';
 import { logger } from './utils/logger';
@@ -56,17 +56,18 @@ const createApp = async (): Promise<FastifyInstance> => {
     logger.debug({}, 'Registering Helmet security plugin');
     await app.register(fastifyHelmet, {
       contentSecurityPolicy: {
-        directives: {
-          defaultSrc: ["'self'"],
-          styleSrc: ["'self'", "'unsafe-inline'", 'cdn.jsdelivr.net'],
-          scriptSrc: ["'self'", "'unsafe-inline'", 'cdn.jsdelivr.net'],
-          imgSrc: ["'self'", 'data:', 'https:'],
-        },
+        directives: swaggerCspDirectives,
       },
       hsts: {
         maxAge: 31536000,
         includeSubDomains: true,
         preload: true,
+      },
+      frameguard: {
+        action: 'deny',
+      },
+      referrerPolicy: {
+        policy: 'strict-origin-when-cross-origin',
       },
     });
 
