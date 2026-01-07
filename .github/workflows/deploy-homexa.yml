@@ -10,42 +10,58 @@ on:
       - develop
       - master
 
-jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
+env: {}
 
+jobs:
+  build:
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
 
     steps:
-      # 1️⃣ Checkout code
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      # 2️⃣ Set up Docker
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # 3️⃣ Log in to GHCR
       - name: Log in to GHCR
+        if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ secrets.GHCR_OWNER }}
+          password: ${{ secrets.GHCR_TOKEN }}
 
-      # 4️⃣ Build & push Docker image
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ghcr.io/${{ secrets.GHCR_OWNER }}/homexa-api
+          tags: |
+            type=raw,value=latest
+            type=sha
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           platforms: linux/amd64
-          tags: ghcr.io/${{ secrets.GHCR_OWNER }}/homexa-api:latest
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=ghcr.io/${{ secrets.GHCR_OWNER }}/homexa-api:buildcache
+          cache-to: type=registry,ref=ghcr.io/${{ secrets.GHCR_OWNER }}/homexa-api:buildcache,mode=max
 
   deploy:
-    needs: build-and-push
+    needs: build
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master')
 
@@ -61,12 +77,11 @@ jobs:
           command_timeout: 10m
           script: |
             set -e
-            APP_PATH=${{ secrets.VPS_APP_PATH }}
+            APP_PATH="${{ secrets.VPS_APP_PATH }}"
             APP_PATH=${APP_PATH:=/opt/apps/homexa-api}
             cd $APP_PATH
 
-            # Pull the latest image and run containers
-            docker pull ghcr.io/${{ secrets.GHCR_OWNER }}/homexa-api:latest
+            docker compose pull
             docker compose up -d --remove-orphans
             docker image prune -af
             docker compose ps
