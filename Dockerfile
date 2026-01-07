@@ -15,6 +15,7 @@ RUN yarn install
 COPY . .
 
 # Generate Prisma client
+RUN npm install -g prisma@5.22.0 @prisma/client@5.22.0
 RUN npx prisma generate
 
 # Build app (if TypeScript)
