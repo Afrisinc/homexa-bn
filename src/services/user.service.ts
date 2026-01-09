@@ -1,19 +1,62 @@
-import { prisma } from '../database/prismaClient';
+import { UserRepository } from '../repositories/user.repository';
+import { PaginationHelper } from '../utils/pagination';
+import { hash } from 'bcryptjs';
+
+const userRepository = new UserRepository();
 
 export class UserService {
+  async getAllUsers(page: number = 1, limit: number = 10, search?: string) {
+    const { page: validPage, limit: validLimit } = PaginationHelper.validateParams(page, limit);
+    const skip = (validPage - 1) * validLimit;
+
+    const where = search
+      ? {
+          OR: [
+            { firstName: { contains: search, mode: 'insensitive' } },
+            { lastName: { contains: search, mode: 'insensitive' } },
+            { email: { contains: search, mode: 'insensitive' } },
+            { phone: { contains: search, mode: 'insensitive' } },
+          ],
+        }
+      : {};
+
+    const [users, total] = await Promise.all([
+      userRepository.findMany(skip, validLimit, where),
+      userRepository.count(where),
+    ]);
+
+    return PaginationHelper.formatResponse(users, validPage, validLimit, total);
+  }
+
+  async createUser(data: any) {
+    const { email, password, firstName, lastName, phone, tin, companyName, role } = data;
+
+    // Check if user already exists
+    const existingUser = await userRepository.findByEmail(email);
+    if (existingUser) {
+      throw new Error('User with this email already exists');
+    }
+
+    // Hash password
+    const hashedPassword = await hash(password, 10);
+
+    const user = await userRepository.createUserWithSelect({
+      email,
+      password: hashedPassword,
+      firstName,
+      lastName,
+      phone,
+      tin,
+      companyName,
+      role: role || 'BUYER',
+    });
+
+    return user;
+  }
+
   async getUser(params: any) {
     const { id } = params;
-    const user = await prisma.user.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        phone: true,
-        createdAt: true,
-      },
-    });
+    const user = await userRepository.findById(id);
     if (!user) {
       throw new Error('User not found');
     }
@@ -21,17 +64,7 @@ export class UserService {
   }
 
   async getUserProfile(userId: string) {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        phone: true,
-        createdAt: true,
-      },
-    });
+    const user = await userRepository.findById(userId);
     if (!user) {
       throw new Error('User not found');
     }
@@ -51,18 +84,7 @@ export class UserService {
       updateData.phone = data.phone;
     }
 
-    const updatedUser = await prisma.user.update({
-      where: { id },
-      data: updateData,
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        phone: true,
-        createdAt: true,
-      },
-    });
+    const updatedUser = await userRepository.updateUser(id, updateData);
     return updatedUser;
   }
 
@@ -83,18 +105,7 @@ export class UserService {
     }
 
     try {
-      const updatedUser = await prisma.user.update({
-        where: { id: userId },
-        data: updateData,
-        select: {
-          id: true,
-          email: true,
-          firstName: true,
-          lastName: true,
-          phone: true,
-          createdAt: true,
-        },
-      });
+      const updatedUser = await userRepository.updateUser(userId, updateData);
       return updatedUser;
     } catch (error: any) {
       if (error.code === 'P2002') {
