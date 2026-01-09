@@ -4,6 +4,25 @@ import { ApiResponseHelper } from '../utils/apiResponse';
 
 const service = new UserService();
 
+export async function getAllUsers(req: FastifyRequest, reply: FastifyReply) {
+  try {
+    const { page = 1, limit = 10, search } = req.query as any;
+    const result = await service.getAllUsers(parseInt(page), parseInt(limit), search);
+    return ApiResponseHelper.success(reply, 'Users retrieved successfully', result);
+  } catch (err: any) {
+    return ApiResponseHelper.badRequest(reply, err.message);
+  }
+}
+
+export async function createUser(req: FastifyRequest, reply: FastifyReply) {
+  try {
+    const result = await service.createUser(req.body);
+    return ApiResponseHelper.success(reply, 'User created successfully', result, 201);
+  } catch (err: any) {
+    return ApiResponseHelper.badRequest(reply, err.message);
+  }
+}
+
 export async function getUser(req: FastifyRequest, reply: FastifyReply) {
   try {
     const result = await service.getUser(req.params);

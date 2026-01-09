@@ -22,7 +22,25 @@ export const UserEntitySchema = {
       type: 'string',
       description: 'User email address',
     },
+    tin: {
+      type: 'string',
+      description: 'Tax Identification Number (optional)',
+    },
+    companyName: {
+      type: 'string',
+      description: 'Company name (optional)',
+    },
+    lastLogin: {
+      type: 'string',
+      format: 'date-time',
+      description: 'Last login timestamp (optional)',
+    },
     createdAt: {
+      type: 'string',
+      format: 'date-time',
+      description: 'Account creation timestamp',
+    },
+    updatedAt: {
       type: 'string',
       format: 'date-time',
       description: 'Account creation timestamp',
@@ -39,7 +57,11 @@ export const UserPublicSchema = {
     firstName: UserEntitySchema.properties.firstName,
     lastName: UserEntitySchema.properties.lastName,
     phone: UserEntitySchema.properties.phone,
+    tin: UserEntitySchema.properties.tin,
+    companyName: UserEntitySchema.properties.companyName,
+    lastLogin: UserEntitySchema.properties.lastLogin,
     createdAt: UserEntitySchema.properties.createdAt,
+    updatedAt: UserEntitySchema.properties.updatedAt,
   },
   required: ['id', 'email', 'createdAt'],
 } as const;

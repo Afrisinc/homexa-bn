@@ -29,6 +29,9 @@ export class AuthService {
       throw new Error('Invalid credentials');
     }
 
+    // Update lastLogin timestamp
+    await repo.updateLastLogin(user.id);
+
     const token = generateToken(user.id, user.email);
     return { user, token };
   }

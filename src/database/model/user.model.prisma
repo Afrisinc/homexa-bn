@@ -12,9 +12,12 @@ model User {
   firstName         String
   lastName          String
   phone             String
+  tin               String?
+  companyName       String?
   role              UserRole  @default(BUYER)
   resetPasswordOtp  String?
   otpExpiresAt      DateTime?
+  lastLogin         DateTime?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 

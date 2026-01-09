@@ -52,4 +52,67 @@ export class UserRepository {
   async findById(id: string) {
     return prisma.user.findUnique({ where: { id } });
   }
+
+  async findMany(skip: number, take: number, where?: any) {
+    return prisma.user.findMany({
+      where,
+      skip,
+      take,
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        phone: true,
+        companyName: true,
+        tin: true,
+        role: true,
+        lastLogin: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async count(where?: any) {
+    return prisma.user.count({ where });
+  }
+
+  async createUserWithSelect(data: any) {
+    return prisma.user.create({
+      data,
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        phone: true,
+        role: true,
+        createdAt: true,
+      },
+    });
+  }
+
+  async updateUser(id: string, data: any) {
+    return prisma.user.update({
+      where: { id },
+      data,
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        phone: true,
+        createdAt: true,
+      },
+    });
+  }
+
+  async updateLastLogin(userId: string) {
+    return prisma.user.update({
+      where: { id: userId },
+      data: { lastLogin: new Date() },
+    });
+  }
 }
