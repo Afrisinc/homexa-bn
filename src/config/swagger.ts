@@ -63,7 +63,7 @@ export const swaggerConfig = {
       { name: 'sellers', description: 'Seller Management' },
       { name: 'categories', description: 'Category Management' },
       { name: 'products', description: 'Product Management' },
-      { name: 'chat', description: 'Chat & Messaging' },
+      { name: 'chats', description: 'Chat & Messaging' },
     ],
     externalDocs: {
       description: 'GitHub Repository',
