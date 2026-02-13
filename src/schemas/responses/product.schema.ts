@@ -5,6 +5,7 @@ export const SellerSchema = {
     firstName: { type: 'string', example: 'Samsung' },
     lastName: { type: 'string', example: 'Seller' },
     email: { type: 'string', format: 'email', example: 'samsung.seller@homexa.com' },
+    companyName: { type: 'string', example: 'afrisinc' },
     phone: { type: 'string', nullable: true, example: '+1-800-SAMSUNG' },
     role: { type: 'string', example: 'SELLER' },
   },
