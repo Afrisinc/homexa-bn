@@ -4,6 +4,7 @@ import { authRoutes } from './auth.routes';
 import { categoryRoutes } from './category.route';
 import { chatRoutes } from './chat.routes';
 import { productRoutes } from './product.routes';
+import { sellersRoutes } from './seller.routes';
 import { userRoutes } from './user.routes';
 
 export async function registerRoutes(app: FastifyInstance) {
@@ -22,4 +23,5 @@ export async function registerRoutes(app: FastifyInstance) {
   app.register(categoryRoutes);
   app.register(productRoutes);
   app.register(chatRoutes);
+  app.register(sellersRoutes);
 }

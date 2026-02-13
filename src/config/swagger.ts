@@ -60,6 +60,7 @@ export const swaggerConfig = {
       { name: 'health', description: 'Service Health & Status' },
       { name: 'auth', description: 'Authentication (Login, Register, Refresh)' },
       { name: 'users', description: 'User Management' },
+      { name: 'sellers', description: 'Seller Management' },
       { name: 'categories', description: 'Category Management' },
       { name: 'products', description: 'Product Management' },
       { name: 'chat', description: 'Chat & Messaging' },

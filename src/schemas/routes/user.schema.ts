@@ -1,6 +1,6 @@
-import { UpdateUserRequestSchema, CreateUserRequestSchema, UserParamsSchema } from '../requests/user.schema';
 import { UserPublicSchema } from '../entities/user.schema';
-import { SuccessResponseSchema, ErrorResponseSchema } from '../responses/common.schema';
+import { CreateUserRequestSchema, UpdateUserRequestSchema, UserParamsSchema } from '../requests/user.schema';
+import { ErrorResponseSchema, SuccessResponseSchema } from '../responses/common.schema';
 
 const PaginationSchema = {
   type: 'object',
